@@ -41,6 +41,7 @@ def order_create(request):
                 order.update_total_price()
                 return redirect('order_list')
             except Exception as e:
+                print(e)
                 return render(request, 'orders/order_form.html', {
                     'order_form': order_form,
                     'error': 'Ошибка при создании заказа. Пожалуйста, проверьте данные.'
@@ -62,6 +63,7 @@ def order_edit(request, order_id):
                 order_form.save()
                 return redirect('order_list')
             except Exception as e:
+                print(e)
                 return render(request, 'orders/order_form.html', {
                     'order_form': order_form,
                     'order': order,
@@ -81,6 +83,7 @@ def order_delete(request, order_id):
         order.delete()
         return redirect('order_list')
     except Exception as e:
+        print(e)
         return render(request, 'orders/order_list.html', {
             'orders': Order.objects.all(),
             'error': 'Ошибка при удалении заказа. Пожалуйста, попробуйте еще раз.'
@@ -140,6 +143,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             instance.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
+            print(e)
             return Response({'error': 'Ошибка при удалении заказа.'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ItemViewSet(viewsets.ModelViewSet):
