@@ -1,7 +1,13 @@
 # orders/urls.py
 
-from django.urls import path
+from django.urls import path, include
 from .views import order_list, order_create, order_edit, order_delete, item_create, item_list, revenue_report, item_delete
+from rest_framework.routers import DefaultRouter
+from .views import OrderViewSet, ItemViewSet
+
+router = DefaultRouter()
+router.register(r'orders', OrderViewSet)
+router.register(r'items', ItemViewSet)
 
 urlpatterns = [
     path('', order_list, name='order_list'),
@@ -14,4 +20,6 @@ urlpatterns = [
     path('items/create/<int:item_id>/', item_create, name='item_create'),
     path('items/', item_list, name='item_list'),
     path('items/delete/<int:item_id>/', item_delete, name='item_delete'),
+
+    path('api/', include(router.urls)),
 ]
