@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center">Отчет о выручке</h2>
+        <p class="text-center">Общий объем выручки за заказы со статусом "оплачено": <strong>{{ total_revenue }} руб.</strong></p>
+
+        <h3>Оплаченные заказы:</h3>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Номер стола</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in paid_orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.table_number }}</td>
+                        <td>{{ order.total_price }} руб.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

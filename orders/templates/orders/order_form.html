@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% if order_form.instance.id %}Редактировать заказ{% else %}Создать новый заказ{% endif %}</h2>
+    <form method="post" class="form-group">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="{{ order_form.table_number.id_for_label }}">{{ order_form.table_number.label }}</label>
+            {{ order_form.table_number }}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ order_form.status.id_for_label }}">{{ order_form.status.label }}</label>
+            {{ order_form.status }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ order_form.items.id_for_label }}">{{ order_form.items.label }}</label>
+            {{ order_form.items }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% if order_form.instance.id %}Обновить заказ{% else %}Создать заказ{% endif %}</button>
+    </form>
+{% endblock %}
