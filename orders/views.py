@@ -7,9 +7,19 @@ from .forms import OrderForm, ItemForm
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import OrderSerializer, ItemSerializer
+from typing import Any, Dict, Optional
 
-def order_list(request):
-    query = request.GET.get('q')
+def order_list(request: Any) -> render:
+    """
+    Отображает список всех заказов с возможностью фильтрации по номеру стола или статусу заказа.
+    
+    Параметры:
+    - request: HTTP-запрос, содержащий параметры фильтрации.
+    
+    Возвращает:
+    - HTML-шаблон с перечислением заказов.
+    """
+    query: Optional[str] = request.GET.get('q')
     orders = Order.objects.all()
 
     if query:
@@ -26,7 +36,16 @@ def order_list(request):
         'orders': orders,
     })
 
-def order_create(request):
+def order_create(request: Any) -> render:
+    """
+    Обрабатывает создание нового заказа.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    
+    Возвращает:
+    - HTML-шаблон с формой для создания заказа или перенаправление на список заказов.
+    """
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
@@ -53,7 +72,17 @@ def order_create(request):
         'order_form': order_form,
     })
 
-def order_edit(request, order_id):
+def order_edit(request: Any, order_id: int) -> render:
+    """
+    Обрабатывает редактирование существующего заказа.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    - order_id: ID заказа для редактирования.
+    
+    Возвращает:
+    - HTML-шаблон с формой для редактирования заказа или перенаправление на список заказов.
+    """
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
         order_form = OrderForm(request.POST, instance=order)
@@ -77,7 +106,17 @@ def order_edit(request, order_id):
         'order': order,
     })
 
-def order_delete(request, order_id):
+def order_delete(request: Any, order_id: int) -> render:
+    """
+    Обрабатывает удаление заказа.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    - order_id: ID заказа для удаления.
+    
+    Возвращает:
+    - Перенаправление на список заказов или отображение списка с сообщением об ошибке.
+    """
     try:
         order = get_object_or_404(Order, id=order_id)
         order.delete()
@@ -89,8 +128,16 @@ def order_delete(request, order_id):
             'error': 'Ошибка при удалении заказа. Пожалуйста, попробуйте еще раз.'
         })
 
-
-def revenue_report(request):
+def revenue_report(request: Any) -> render:
+    """
+    Отображает отчет о доходах от оплаченных заказов.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    
+    Возвращает:
+    - HTML-шаблон с отчетом о доходах.
+    """
     paid_orders = Order.objects.filter(status='paid')
     
     total_revenue = sum(order.total_price for order in paid_orders)
@@ -100,13 +147,32 @@ def revenue_report(request):
         'paid_orders': paid_orders,
     })
 
-def item_list(request):
+def item_list(request: Any) -> render:
+    """
+    Отображает список всех предметов.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    
+    Возвращает:
+    - HTML-шаблон с перечислением предметов.
+    """
     items = Item.objects.all()
     return render(request, 'orders/item_list.html', {
         'items': items,
     })
 
-def item_create(request, item_id=None):
+def item_create(request: Any, item_id: Optional[int] = None) -> render:
+    """
+    Обрабатывает создание или редактирование предмета.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    - item_id: ID предмета для редактирования (если есть).
+    
+    Возвращает:
+    - HTML-шаблон с формой для создания или редактирования предмета.
+    """
     if item_id:
         item = get_object_or_404(Item, id=item_id)
         item_form = ItemForm(request.POST or None, instance=item)
@@ -127,17 +193,38 @@ def item_create(request, item_id=None):
         'item_form': item_form,
     })
 
-def item_delete(request, item_id):
+def item_delete(request: Any, item_id: int) -> render:
+    """
+    Обрабатывает удаление предмета.
+    
+    Параметры:
+    - request: HTTP-запрос.
+    - item_id: ID предмета для удаления.
+    
+    Возвращает:
+    - Перенаправление на список предметов.
+    """
     item = get_object_or_404(Item, id=item_id)
     item.delete()
     return redirect('item_list')
 
-
 class OrderViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet для управления заказами через API.
+    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request: Any, *args: Any, **kwargs: Any) -> Response:
+        """
+        Обрабатывает удаление заказа через API.
+        
+        Параметры:
+        - request: HTTP-запрос.
+        
+        Возвращает:
+        - Ответ с кодом 204 при успешном удалении или сообщение об ошибке.
+        """
         try:
             instance = self.get_object()
             instance.delete()
@@ -147,5 +234,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Ошибка при удалении заказа.'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ItemViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet для управления предметами через API.
+    """
     queryset = Item.objects.all()
     serializer_class = ItemSerializer

@@ -16,9 +16,9 @@ urlpatterns = [
     path('delete/<int:order_id>/', order_delete, name='order_delete'),
     path('revenue/', revenue_report, name='revenue_report'),
 
+    path('items/', item_list, name='item_list'),
     path('items/create/', item_create, name='item_create'),
     path('items/create/<int:item_id>/', item_create, name='item_create'),
-    path('items/', item_list, name='item_list'),
     path('items/delete/<int:item_id>/', item_delete, name='item_delete'),
 
     path('api/', include(router.urls)),
