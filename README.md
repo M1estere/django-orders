@@ -1,4 +1,4 @@
-# Django Orders Management System
+# Система кафе
 
 ## Описание системы
 
